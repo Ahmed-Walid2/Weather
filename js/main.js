@@ -44,6 +44,7 @@ async function displayWeatherForCity(city) {
 
     let dayInNumber = myDate.getDate();
 
+    today.innerHTML = day;
     locationCity.innerHTML = data.location.name;
     degree.innerHTML = data.current.temp_c + `<sup>o</sup>C`;
     todayStatues.innerHTML = data.current.condition.text;
