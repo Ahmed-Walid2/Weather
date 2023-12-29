@@ -16,80 +16,43 @@ let todayDate = document.querySelector("#today-date");
 let secDay = document.querySelector("#sec-day");
 let thirdDay = document.querySelector("#third-day");
 
-displayWeatherToday();
+displayWeatherForCity("cairo");
 
 searchBox.addEventListener("keyup", function () {
-  getWeatherBySearch(searchBox.value);
+  displayWeatherForCity(searchBox.value || "cairo");
 });
 
-async function displayWeatherToday() {
+async function displayWeatherForCity(city) {
   let response = await fetch(
-    `https://api.weatherapi.com/v1/forecast.json?key=8915cd32cf36432fbb7155335232812&q=cairo&days=3`
+    `https://api.weatherapi.com/v1/forecast.json?key=8915cd32cf36432fbb7155335232812&q=${city}&days=3`
   );
+
   let data = await response.json();
 
-  if (response.status == 400) {
-  } else {
-    let mydate = new Date(data.forecast.forecastday[0].date);
-    let mydate2 = new Date(data.forecast.forecastday[1].date);
-    let mydate3 = new Date(data.forecast.forecastday[2].date);
+  if (response.status === 200) {
+    let myDate = new Date(data.forecast.forecastday[0].date);
+    let myDate2 = new Date(data.forecast.forecastday[1].date);
+    let myDate3 = new Date(data.forecast.forecastday[2].date);
 
-    let day = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ][mydate.getDay()];
+    let day = getDayName(myDate.getDay());
 
-    let day2 = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ][mydate2.getDay()];
+    let day2 = getDayName(myDate2.getDay());
 
-    let day3 = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ][mydate3.getDay()];
+    let day3 = getDayName(myDate3.getDay());
 
-    let month = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ][mydate.getMonth()];
+    let month = getMonthName(myDate.getMonth());
 
-    let dayInNumber = mydate.getDate();
+    let dayInNumber = myDate.getDate();
 
     locationCity.innerHTML = data.location.name;
     degree.innerHTML = data.current.temp_c + `<sup>o</sup>C`;
     todayStatues.innerHTML = data.current.condition.text;
-    today.innerHTML = day;
     todayDate.innerHTML = dayInNumber + month;
     todayIcon.innerHTML = `<img class="w-100 " src="https:${data.current.condition.icon}" alt="${data.current.condition.text}" />`;
 
     secDay.innerHTML = day2;
     secIcon.innerHTML = `<img  src="https:${data.forecast.forecastday[1].day.condition.icon}" alt="${data.forecast.forecastday[1].day.condition.text}" />`;
+
     secDeg.innerHTML =
       data.forecast.forecastday[1].day.maxtemp_c + `<sup>o</sup>C`;
 
@@ -99,7 +62,6 @@ async function displayWeatherToday() {
     secStatues.innerHTML = data.forecast.forecastday[1].day.condition.text;
 
     thirdDay.innerHTML = day3;
-
     thirdIcon.innerHTML = `<img  src="https:${data.forecast.forecastday[2].day.condition.icon}" alt="${data.forecast.forecastday[2].day.condition.text}" />`;
 
     thirdDeg.innerHTML =
@@ -112,91 +74,41 @@ async function displayWeatherToday() {
   }
 }
 
-async function getWeatherBySearch(city) {
-  let response = await fetch(
-    `https://api.weatherapi.com/v1/forecast.json?key=8915cd32cf36432fbb7155335232812&q=${city}&days=3`
-  );
-  let data = await response.json();
+// Helper Functions
+function getDayName(numberOfDay) {
+  const weekDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
-  if (response.status == 400) {
-  } else {
-    let mydate = new Date(data.forecast.forecastday[0].date);
-    let mydate2 = new Date(data.forecast.forecastday[1].date);
-    let mydate3 = new Date(data.forecast.forecastday[2].date);
+  const dayName = weekDays[numberOfDay];
+  // console.log(dayName);
 
-    let day = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ][mydate.getDay()];
+  return dayName;
+}
 
-    let day2 = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ][mydate2.getDay()];
+function getMonthName(numberOfMonth) {
+  const monthsNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
-    let day3 = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ][mydate3.getDay()];
+  const monthName = monthsNames[numberOfMonth];
 
-    let month = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ][mydate.getMonth()];
-
-    let dayInNumber = mydate.getDate();
-
-    locationCity.innerHTML = data.location.name;
-    degree.innerHTML = data.current.temp_c + `<sup>o</sup>C`;
-    todayStatues.innerHTML = data.current.condition.text;
-    todayDate.innerHTML = dayInNumber + month;
-    todayIcon.innerHTML = `<img class="w-100 " src="https:${data.current.condition.icon}" alt="${data.current.condition.text}" />`;
-
-    secDay.innerHTML = day2;
-    secIcon.innerHTML = `<img  src="https:${data.forecast.forecastday[1].day.condition.icon}" alt="${data.forecast.forecastday[1].day.condition.text}" />`;
-
-    secDeg.innerHTML =
-      data.forecast.forecastday[1].day.maxtemp_c + `<sup>o</sup>C`;
-
-    secSmallDeg.innerHTML =
-      data.forecast.forecastday[1].day.mintemp_c + `<sup>o</sup>C`;
-
-    secStatues.innerHTML = data.forecast.forecastday[1].day.condition.text;
-
-    thirdDay.innerHTML = day3;
-    thirdIcon.innerHTML = `<img  src="https:${data.forecast.forecastday[2].day.condition.icon}" alt="${data.forecast.forecastday[2].day.condition.text}" />`;
-
-    thirdDeg.innerHTML =
-      data.forecast.forecastday[2].day.maxtemp_c + `<sup>o</sup>C`;
-
-    thirdSmallDeg.innerHTML =
-      data.forecast.forecastday[2].day.mintemp_c + `<sup>o</sup>C`;
-
-    thirdStatues.innerHTML = data.forecast.forecastday[2].day.condition.text;
-  }
+  return monthName;
 }
